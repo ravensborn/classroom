@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__laravel-boost__application-info",
+      "Bash(grep -E \"\\\\.php$\")",
+      "Bash(find /var/www -name livewire.php -o -name *Livewire* -type d)",
+      "mcp__laravel-boost__database-schema",
+      "Bash(php artisan:*)",
+      "Bash(composer require:*)",
+      "Bash(composer show:*)",
+      "Bash(vendor/bin/pint --dirty --format agent 2>&1)",
+      "Bash(grep -r \"logo\\\\|brand\\\\|AppLogo\\\\|system_logo\\\\|app_logo\" /var/www/config/ /var/www/resources/ --include=*.php --include=*.blade.php -l)",
+      "Bash(ls:*)",
+      "Bash(grep -r \"r2\\\\|R2\\\\|cloudflare\\\\|upload\\\\|video\\\\|media\" /var/www/app/ --include=*.php -l)",
+      "Bash(php artisan tinker --execute ':*)",
+      "Bash(AWS_ACCESS_KEY_ID=a246f46cc3597d3204c586b5c218e949 AWS_SECRET_ACCESS_KEY=4ac13caee4928b401f84ea4d243c4b0d722a487c1f945ff276d2f8007e1c14b0 aws s3 ls s3://classroom/ --endpoint-url https://51f21b78ab9dcf37c64ecdb249ae2748.r2.cloudflarestorage.com --region auto)",
+      "mcp__laravel-boost__search-docs"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "laravel-boost"
+  ]
+}

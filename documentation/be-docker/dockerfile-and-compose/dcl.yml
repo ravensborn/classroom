@@ -1,0 +1,48 @@
+services:
+  app:
+    container_name: classroom
+    build:
+      context: .
+      dockerfile: DockerfileLocal
+      target: php
+      args:
+        - APP_ENV=${APP_ENV:-development}
+    environment:
+      - CONTAINER_ROLE=app
+      - APP_ENV=${APP_ENV:-development}
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www:delegated
+    ports:
+      - "2010:8080"
+    depends_on:
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - laravel
+    restart: unless-stopped
+
+  database:
+    container_name: classroom-database
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=${DB_DATABASE}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - ./documentation/be-docker/data/postgres-data:/var/lib/postgresql
+    networks:
+      - laravel
+    healthcheck:
+      test: [ "CMD-SHELL", "exit 0" ]
+    restart: unless-stopped
+
+
+volumes:
+  postgres-data:
+
+networks:
+  laravel:
+    driver: bridge
