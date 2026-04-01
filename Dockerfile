@@ -1,3 +1,4 @@
+# Base PHP image
 FROM php:8.4-fpm AS php
 
 ENV PHP_OPCACHE_ENABLE=1 \
@@ -5,10 +6,7 @@ ENV PHP_OPCACHE_ENABLE=1 \
     PHP_OPCACHE_VALIDATE_TIMESTAMPS=1 \
     PHP_OPCACHE_REVALIDATE_FREQ=2
 
-# Build arguments for flexible UID/GID matching host user
-ARG UID=1000
-ARG GID=1000
-
+# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
     libpq-dev \
@@ -16,12 +14,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     nginx \
     libonig-dev \
     zip \
+    ffmpeg \
     libzip-dev \
     libpng-dev \
     libjpeg-dev \
     libwebp-dev \
     libfreetype6-dev \
-    ffmpeg \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -41,31 +39,42 @@ RUN docker-php-ext-configure gd --enable-gd --with-jpeg --with-webp --with-freet
         zip \
         pcntl
 
-# Install Redis extension
+# Install Redis PHP extension
 RUN pecl install redis \
     && docker-php-ext-enable redis
 
-# Configure www-data user to match host UID/GID for bind mount compatibility
-RUN groupmod --gid ${GID} www-data \
-    && usermod --uid ${UID} --gid ${GID} www-data \
-    && chown -R www-data:www-data /var/www
-
-# Get Composer
+# Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy configuration files
+# Copy nginx + PHP configs
 COPY ./documentation/be-docker/configuration-files/php/php.ini /usr/local/etc/php/php.ini
 COPY ./documentation/be-docker/configuration-files/php/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
 COPY ./documentation/be-docker/configuration-files/nginx/nginx.conf /etc/nginx/nginx.conf
 
-# Fix nginx to run as www-data and create required directories
+# Fix nginx user
 RUN sed -i 's/user  nginx;/user  www-data;/' /etc/nginx/nginx.conf || true \
-    && mkdir -p /var/cache/nginx /var/log/nginx /run /var/lib/nginx/body /var/lib/nginx/proxy /var/lib/nginx/fastcgi /var/lib/nginx/uwsgi /var/lib/nginx/scgi \
+    && mkdir -p /var/cache/nginx /var/log/nginx /run \
+    /var/lib/nginx/body /var/lib/nginx/proxy /var/lib/nginx/fastcgi \
     && chown -R www-data:www-data /var/cache/nginx /var/log/nginx /run /var/lib/nginx
 
+# Set work directory
 WORKDIR /var/www
 
-# Switch to non-root user
+# --- IMPORTANT FOR DOKPLOY ---
+# Copy app code into the image
+COPY --chown=www-data:www-data . .
+
+# Install Laravel dependencies
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+# Ensure proper permissions
+RUN chown -R www-data:www-data /var/www \
+    && chmod -R 775 storage bootstrap/cache
+
+# Entrypoint for APP | HORIZON | SCHEDULER
+COPY ./entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 USER www-data
 
-ENTRYPOINT ["documentation/be-docker/configuration-files/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
