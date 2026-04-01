@@ -1,0 +1,31 @@
+services:
+  app:
+    container_name: classroom
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: php
+      args:
+        - APP_ENV=${APP_ENV:-development}
+    environment:
+      - CONTAINER_ROLE=app
+      - APP_ENV=${APP_ENV:-development}
+    working_dir: /var/www
+    volumes:
+      - storage-data:/var/www/storage/app
+      - logs-data:/var/www/storage/logs
+    networks:
+      - laravel
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+
+volumes:
+  storage-data:
+  logs-data:
+
+networks:
+  laravel:
+    driver: bridge
+  dokploy-network:
+    external: true

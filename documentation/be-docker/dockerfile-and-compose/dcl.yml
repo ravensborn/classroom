@@ -39,9 +39,25 @@ services:
       test: [ "CMD-SHELL", "exit 0" ]
     restart: unless-stopped
 
+  redis:
+    image: redis:alpine
+    container_name: classroom-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - ./documentation/be-docker/data/redis-data/data:/data
+    networks:
+      - laravel
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
 volumes:
   postgres-data:
+  redis-data:
 
 networks:
   laravel:
