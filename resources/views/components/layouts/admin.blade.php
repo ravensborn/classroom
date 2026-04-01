@@ -7,10 +7,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
     <style>
-        body { font-family: 'Noto Naskh Arabic', serif; }
         [x-cloak] { display: none !important; }
     </style>
 </head>

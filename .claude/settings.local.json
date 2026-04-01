@@ -23,7 +23,9 @@
       "Bash(do echo:*)",
       "Read(//var/www/**)",
       "Bash(done)",
-      "Bash(grep -r grid-cols-2 /var/www/resources/views/livewire/admin/ --include=*.blade.php -l)"
+      "Bash(grep -r grid-cols-2 /var/www/resources/views/livewire/admin/ --include=*.blade.php -l)",
+      "mcp__laravel-boost__browser-logs",
+      "mcp__laravel-boost__last-error"
     ]
   },
   "enableAllProjectMcpServers": true,
