@@ -1,24 +1,24 @@
-<div class="min-h-screen flex flex-col">
+<div class="min-h-screen flex flex-col bg-zinc-50">
     {{-- Hero --}}
     <div class="flex-1 flex flex-col items-center justify-center text-center px-4 py-16">
         <div class="mb-8">
-            <img src="{{ asset('logo.png') }}" alt="{{ __('Shaqlawa Private Institute') }}" class="w-28 h-28 rounded-full object-cover mx-auto mb-6 shadow-lg border-4 border-indigo-100">
-            <h1 class="text-4xl font-bold text-indigo-900 mb-3">{{ __('Shaqlawa Private Institute') }}</h1>
-            <p class="text-xl text-gray-600 mb-2">{{ __('A modern learning platform') }}</p>
-            <p class="text-base text-gray-500">{{ __('For Students and Teachers') }}</p>
+            <img src="{{ asset('logo.png') }}" alt="{{ __('Shaqlawa Private Institute') }}" class="w-24 h-24 rounded-full object-cover mx-auto mb-6 shadow-sm border border-zinc-200">
+            <h1 class="text-2xl font-semibold tracking-tight text-zinc-900 mb-3">{{ __('Shaqlawa Private Institute') }}</h1>
+            <p class="text-base text-zinc-500 mb-1">{{ __('A modern learning platform') }}</p>
+            <p class="text-sm text-zinc-400">{{ __('For Students and Teachers') }}</p>
         </div>
 
         <a href="{{ route('login') }}"
-           class="inline-flex items-center gap-2 px-8 py-3 bg-indigo-600 text-white text-lg font-semibold rounded-xl shadow-md hover:bg-indigo-700 transition-colors">
+           class="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium bg-zinc-900 text-zinc-50 hover:bg-zinc-800 px-6 h-9 transition-colors">
             {{ __('Enter the platform') }}
-            <svg class="w-5 h-5 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
         </a>
     </div>
 
     {{-- Footer --}}
-    <footer class="py-6 text-center text-sm text-gray-400">
+    <footer class="py-5 text-center text-xs text-zinc-400 border-t border-zinc-200">
         &copy; {{ date('Y') }} {{ __('Shaqlawa Private Institute') }}
     </footer>
 </div>

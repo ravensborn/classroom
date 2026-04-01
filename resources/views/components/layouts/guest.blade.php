@@ -13,7 +13,7 @@
         body { font-family: 'Noto Naskh Arabic', serif; }
     </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 antialiased">
+<body class="min-h-screen bg-zinc-50 antialiased">
     {{ $slot }}
     @livewireScripts
 </body>

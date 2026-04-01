@@ -1,8 +1,8 @@
 <div>
-    <div class="flex items-center justify-between mb-6">
-        <h2 class="text-2xl font-bold text-gray-900">{{ __('Students') }}</h2>
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <h2 class="text-2xl font-semibold tracking-tight text-zinc-900">{{ __('Students') }}</h2>
         <a href="{{ route('admin.students.create') }}"
-           class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">
+           class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-zinc-900 text-zinc-50 hover:bg-zinc-800 px-4 h-9 transition-colors shrink-0">
             + {{ __('Add Student') }}
         </a>
     </div>
@@ -10,23 +10,25 @@
     {{-- Search --}}
     <div class="mb-4">
         <input wire:model.live.debounce.300ms="search" type="text" placeholder="{{ __('Search') }}..."
-               class="w-full max-w-sm border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+               class="flex h-9 w-full sm:max-w-sm rounded-md border border-zinc-200 bg-white px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-900">
     </div>
 
     {{-- Block modal --}}
     @if($blockingUserId)
-        <div class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
-            <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-md mx-4">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('Block Message') }}</h3>
+        <div class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-lg border border-zinc-200 shadow-xl w-full max-w-md p-6">
+                <h3 class="text-lg font-semibold text-zinc-900 mb-1">{{ __('Block Message') }}</h3>
+                <p class="text-sm text-zinc-500 mb-4">{{ __('Enter a reason for blocking this student.') }}</p>
+                <div class="border-t border-zinc-100 my-4"></div>
                 <input wire:model="blockedMessage" type="text"
                        placeholder="{{ __('Block Message') }}"
-                       class="w-full border border-gray-300 rounded-lg px-4 py-2 mb-1 focus:outline-none focus:ring-2 focus:ring-red-400">
+                       class="flex h-9 w-full rounded-md border border-zinc-200 bg-white px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-900 mb-1">
                 @error('blockedMessage')
-                    <p class="text-sm text-red-600 mb-3">{{ $message }}</p>
+                    <p class="text-xs text-red-500 mt-1 mb-3">{{ $message }}</p>
                 @enderror
                 <div class="flex gap-3 justify-end mt-4">
-                    <button wire:click="cancelBlock" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">{{ __('Cancel') }}</button>
-                    <button wire:click="confirmBlock" class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700">{{ __('Blocked') }}</button>
+                    <button wire:click="cancelBlock" class="inline-flex items-center justify-center rounded-md text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 px-3 h-9 transition-colors">{{ __('Cancel') }}</button>
+                    <button wire:click="confirmBlock" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-red-600 text-white hover:bg-red-700 px-4 h-9 transition-colors">{{ __('Blocked') }}</button>
                 </div>
             </div>
         </div>
@@ -34,61 +36,67 @@
 
     {{-- Delete modal --}}
     @if($confirmingDeleteId)
-        <div class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
-            <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-sm mx-4">
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ __('Confirm Delete') }}</h3>
-                <p class="text-gray-500 text-sm mb-4">{{ __('Are you sure you want to delete this?') }}</p>
+        <div class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-lg border border-zinc-200 shadow-xl w-full max-w-md p-6">
+                <h3 class="text-lg font-semibold text-zinc-900 mb-1">{{ __('Confirm Delete') }}</h3>
+                <p class="text-sm text-zinc-500 mb-4">{{ __('Are you sure you want to delete this?') }}</p>
+                <div class="border-t border-zinc-100 my-4"></div>
                 <div class="flex gap-3 justify-end">
-                    <button wire:click="cancelDelete" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">{{ __('No, Cancel') }}</button>
-                    <button wire:click="deleteStudent" class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700">{{ __('Yes, Delete') }}</button>
+                    <button wire:click="cancelDelete" class="inline-flex items-center justify-center rounded-md text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 px-3 h-9 transition-colors">{{ __('No, Cancel') }}</button>
+                    <button wire:click="deleteStudent" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-red-600 text-white hover:bg-red-700 px-4 h-9 transition-colors">{{ __('Yes, Delete') }}</button>
                 </div>
             </div>
         </div>
     @endif
 
     {{-- Table --}}
-    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+    <div class="rounded-lg border border-zinc-200 bg-white shadow-sm overflow-x-auto">
         <table class="w-full text-sm">
-            <thead class="bg-gray-50 border-b border-gray-200">
-                <tr>
-                    <th class="text-right px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">{{ __('Name') }}</th>
-                    <th class="text-right px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">{{ __('Username') }}</th>
-                    <th class="text-right px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">{{ __('Department') }}</th>
-                    <th class="text-right px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">{{ __('Stage') }}</th>
-                    <th class="text-right px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">{{ __('Active') }}</th>
-                    <th class="px-5 py-3"></th>
+            <thead>
+                <tr class="border-b border-zinc-200">
+                    <th class="h-10 px-4 text-right align-middle font-medium text-zinc-500 text-xs">{{ __('Name') }}</th>
+                    <th class="h-10 px-4 text-right align-middle font-medium text-zinc-500 text-xs">{{ __('Username') }}</th>
+                    <th class="h-10 px-4 text-right align-middle font-medium text-zinc-500 text-xs">{{ __('Department') }}</th>
+                    <th class="h-10 px-4 text-right align-middle font-medium text-zinc-500 text-xs">{{ __('Stage') }}</th>
+                    <th class="h-10 px-4 text-right align-middle font-medium text-zinc-500 text-xs">{{ __('Active') }}</th>
+                    <th class="h-10 px-4"></th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100">
+            <tbody>
                 @forelse($students as $student)
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="px-5 py-3 font-medium text-gray-900">{{ $student->name }}</td>
-                        <td class="px-5 py-3 text-gray-500">{{ $student->username }}</td>
-                        <td class="px-5 py-3 text-gray-500">{{ $student->department?->name ?? '—' }}</td>
-                        <td class="px-5 py-3 text-gray-500">{{ $student->stage }}</td>
-                        <td class="px-5 py-3">
+                    <tr class="border-b border-zinc-100 hover:bg-zinc-50/50 transition-colors">
+                        <td class="p-4 align-middle text-sm font-medium text-zinc-900">{{ $student->name }}</td>
+                        <td class="p-4 align-middle text-sm text-zinc-500">{{ $student->username }}</td>
+                        <td class="p-4 align-middle text-sm text-zinc-500">{{ $student->department?->name ?? '—' }}</td>
+                        <td class="p-4 align-middle text-sm text-zinc-500">{{ $student->stage }}</td>
+                        <td class="p-4 align-middle text-sm">
                             <button wire:click="toggleActive({{ $student->id }})"
-                                    class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none {{ $student->is_active ? 'bg-green-500' : 'bg-red-400' }}">
-                                <span class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform {{ $student->is_active ? 'translate-x-6 rtl:-translate-x-6' : 'translate-x-1' }}"></span>
+                                    class="{{ $student->is_active ? 'relative inline-flex h-5 w-9 items-center rounded-full bg-zinc-900 transition-colors' : 'relative inline-flex h-5 w-9 items-center rounded-full bg-zinc-200 transition-colors' }}">
+                                <span class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform {{ $student->is_active ? 'translate-x-4 rtl:-translate-x-4' : 'translate-x-0.5' }}"></span>
                             </button>
                         </td>
-                        <td class="px-5 py-3">
+                        <td class="p-4 align-middle text-sm">
                             <div class="flex items-center gap-3 justify-end">
                                 <a href="{{ route('admin.students.edit', $student) }}"
-                                   class="text-indigo-600 hover:text-indigo-800 font-medium text-xs">{{ __('Edit') }}</a>
+                                   class="inline-flex items-center justify-center rounded-md text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 px-3 h-9 transition-colors">{{ __('Edit') }}</a>
                                 <button wire:click="confirmDelete({{ $student->id }})"
-                                        class="text-red-500 hover:text-red-700 font-medium text-xs">{{ __('Delete') }}</button>
+                                        class="inline-flex items-center justify-center rounded-md text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-700 px-3 h-9 transition-colors">{{ __('Delete') }}</button>
                             </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-5 py-8 text-center text-gray-400">{{ __('No classrooms yet') }}</td>
+                        <td colspan="6" class="text-center py-16 text-zinc-400">
+                            <svg class="w-10 h-10 mx-auto mb-3 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                            {{ __('No classrooms yet') }}
+                        </td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
-        <div class="px-5 py-3 border-t border-gray-100">
+        <div class="px-4 py-3 border-t border-zinc-100 flex items-center justify-end">
             {{ $students->links() }}
         </div>
     </div>

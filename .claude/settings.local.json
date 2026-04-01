@@ -14,7 +14,16 @@
       "Bash(grep -r \"r2\\\\|R2\\\\|cloudflare\\\\|upload\\\\|video\\\\|media\" /var/www/app/ --include=*.php -l)",
       "Bash(php artisan tinker --execute ':*)",
       "Bash(AWS_ACCESS_KEY_ID=a246f46cc3597d3204c586b5c218e949 AWS_SECRET_ACCESS_KEY=4ac13caee4928b401f84ea4d243c4b0d722a487c1f945ff276d2f8007e1c14b0 aws s3 ls s3://classroom/ --endpoint-url https://51f21b78ab9dcf37c64ecdb249ae2748.r2.cloudflarestorage.com --region auto)",
-      "mcp__laravel-boost__search-docs"
+      "mcp__laravel-boost__search-docs",
+      "Bash(find /var/www/resources/views -type f -name *.blade.php)",
+      "Bash(find /var/www -maxdepth 2 -name tailwind.config.* -o -name .tailwindrc*)",
+      "Bash(npm run:*)",
+      "Bash(/usr/local/bin/node /usr/local/bin/npm run build)",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Read(//var/www/**)",
+      "Bash(done)",
+      "Bash(grep -r grid-cols-2 /var/www/resources/views/livewire/admin/ --include=*.blade.php -l)"
     ]
   },
   "enableAllProjectMcpServers": true,
