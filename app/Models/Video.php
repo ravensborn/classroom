@@ -25,6 +25,11 @@ class Video extends Model
         return $this->hasMany(VideoAttendance::class);
     }
 
+    public function comments(): HasMany
+    {
+        return $this->hasMany(VideoComment::class)->latest();
+    }
+
     public function isAttendanceOpen(): bool
     {
         return $this->created_at->addDays(3)->isFuture();

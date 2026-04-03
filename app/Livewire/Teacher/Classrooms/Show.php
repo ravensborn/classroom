@@ -30,6 +30,8 @@ class Show extends Component
 
     public ?int $showingAttendanceForVideoId = null;
 
+    public ?int $showingCommentsForVideoId = null;
+
     public function mount(Classroom $classroom): void
     {
         // Ensure teacher is assigned to this classroom
@@ -142,11 +144,24 @@ class Show extends Component
         $this->showingAttendanceForVideoId = $this->showingAttendanceForVideoId === $videoId ? null : $videoId;
     }
 
+    public function toggleComments(int $videoId): void
+    {
+        $this->showingCommentsForVideoId = $this->showingCommentsForVideoId === $videoId ? null : $videoId;
+    }
+
+    public function deleteComment(int $commentId): void
+    {
+        \App\Models\VideoComment::whereHas('video', fn ($q) => $q->where('classroom_id', $this->classroom->id))
+            ->findOrFail($commentId)
+            ->delete();
+    }
+
     public function render()
     {
         $videos = Video::where('classroom_id', $this->classroom->id)
             ->where('user_id', auth()->id())
             ->with('teacher')
+            ->withCount('comments')
             ->latest()
             ->get();
 
@@ -158,7 +173,15 @@ class Show extends Component
                 ->get();
         }
 
-        return view('livewire.teacher.classrooms.show', compact('videos', 'attendances'))
+        $comments = collect();
+        if ($this->showingCommentsForVideoId) {
+            $comments = \App\Models\VideoComment::where('video_id', $this->showingCommentsForVideoId)
+                ->with('author.department')
+                ->latest()
+                ->get();
+        }
+
+        return view('livewire.teacher.classrooms.show', compact('videos', 'attendances', 'comments'))
             ->layout('components.layouts.portal');
     }
 }

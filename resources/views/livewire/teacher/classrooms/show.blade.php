@@ -150,12 +150,50 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                                 {{ __('Attendance') }}
                             </button>
+                            <button wire:click="toggleComments({{ $video->id }})"
+                                    class="inline-flex items-center gap-1.5 justify-center rounded-md text-sm font-medium px-3 h-9 transition-colors {{ $showingCommentsForVideoId === $video->id ? 'bg-zinc-900 text-white' : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900' }}">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                {{ __('Comments') }}
+                                @if($video->comments_count > 0)
+                                    <span class="inline-flex items-center justify-center rounded-full {{ $showingCommentsForVideoId === $video->id ? 'bg-white/20 text-white' : 'bg-zinc-100 text-zinc-600' }} text-xs font-medium w-5 h-5">{{ $video->comments_count }}</span>
+                                @endif
+                            </button>
                             <button wire:click="openEditModal({{ $video->id }})"
                                     class="inline-flex items-center justify-center rounded-md text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 px-3 h-9 transition-colors">{{ __('Edit') }}</button>
                             <button wire:click="confirmDelete({{ $video->id }})"
                                     class="inline-flex items-center justify-center rounded-md text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-700 px-3 h-9 transition-colors">{{ __('Delete') }}</button>
                         </div>
                     </div>
+
+                    {{-- Comments panel --}}
+                    @if($showingCommentsForVideoId === $video->id)
+                        <div class="border-t border-zinc-100 px-5 py-4 space-y-3">
+                            <h4 class="text-sm font-semibold text-zinc-700">{{ __('Comments') }}</h4>
+                            @forelse($comments as $comment)
+                                <div wire:key="comment-{{ $comment->id }}" class="flex gap-3 items-start">
+                                    <div class="w-7 h-7 rounded-full bg-zinc-200 flex items-center justify-center text-xs font-semibold text-zinc-600 shrink-0">
+                                        {{ $comment->author->initials() }}
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-baseline justify-between gap-2">
+                                            <div>
+                                                <span class="text-xs font-semibold text-zinc-700">{{ $comment->author->name }}</span>
+                                                <span class="text-xs text-zinc-400 ms-1.5">{{ $comment->author->department?->name }} · {{ __('Stage') }} {{ $comment->author->stage }}</span>
+                                            </div>
+                                            <span class="text-xs text-zinc-400 shrink-0" dir="ltr">{{ $comment->created_at->locale('en')->diffForHumans() }}</span>
+                                        </div>
+                                        <p class="text-sm text-zinc-700 mt-0.5 break-words">{{ $comment->body }}</p>
+                                    </div>
+                                    <button wire:click="deleteComment({{ $comment->id }})"
+                                            class="shrink-0 text-zinc-300 hover:text-red-500 transition-colors mt-0.5">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    </button>
+                                </div>
+                            @empty
+                                <p class="text-sm text-zinc-400">{{ __('No comments yet') }}</p>
+                            @endforelse
+                        </div>
+                    @endif
 
                     {{-- Attendance panel --}}
                     @if($showingAttendanceForVideoId === $video->id)

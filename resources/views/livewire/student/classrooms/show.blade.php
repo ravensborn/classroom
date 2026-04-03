@@ -98,6 +98,62 @@
                             <span class="text-xs text-zinc-400">{{ __('Attendance window closed') }}</span>
                         @endif
                     </div>
+
+                    {{-- Comments toggle --}}
+                    <div class="mt-3 pt-3 border-t border-zinc-100">
+                        <button wire:click="toggleComments({{ $video->id }})"
+                                class="inline-flex items-center gap-1.5 text-sm font-medium transition-colors {{ $showingCommentsForVideoId === $video->id ? 'text-zinc-900' : 'text-zinc-500 hover:text-zinc-900' }}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                            {{ __('Comments') }}
+                            @if($video->comments_count > 0)
+                                <span class="inline-flex items-center justify-center rounded-full bg-zinc-100 text-zinc-600 text-xs font-medium w-5 h-5">{{ $video->comments_count }}</span>
+                            @endif
+                        </button>
+                    </div>
+
+                    {{-- Comments panel --}}
+                    @if($showingCommentsForVideoId === $video->id)
+                        <div class="mt-3 space-y-3">
+                            @forelse($video->comments as $comment)
+                                <div wire:key="comment-{{ $comment->id }}" class="flex gap-3 items-start">
+                                    <div class="w-7 h-7 rounded-full bg-zinc-200 flex items-center justify-center text-xs font-semibold text-zinc-600 shrink-0">
+                                        {{ $comment->author->initials() }}
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-baseline justify-between gap-2">
+                                            <span class="text-xs font-semibold text-zinc-700">{{ $comment->author->name }}</span>
+                                            <span class="text-xs text-zinc-400 shrink-0" dir="ltr">{{ $comment->created_at->locale('en')->diffForHumans() }}</span>
+                                        </div>
+                                        <p class="text-sm text-zinc-700 mt-0.5 break-words">{{ $comment->body }}</p>
+                                    </div>
+                                    @if($comment->user_id === auth()->id())
+                                        <button wire:click="deleteComment({{ $comment->id }})"
+                                                class="shrink-0 text-zinc-300 hover:text-red-500 transition-colors mt-0.5">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                        </button>
+                                    @endif
+                                </div>
+                            @empty
+                                <p class="text-sm text-zinc-400">{{ __('No comments yet') }}</p>
+                            @endforelse
+
+                            {{-- Add comment --}}
+                            <div class="flex gap-2 pt-1">
+                                <textarea wire:model="commentText"
+                                          placeholder="{{ __('Write a comment...') }}"
+                                          rows="1"
+                                          maxlength="1000"
+                                          class="flex-1 rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-900 resize-none @error('commentText') border-red-500 focus:ring-red-500 @enderror"></textarea>
+                                <button wire:click="addComment({{ $video->id }})"
+                                        wire:loading.attr="disabled"
+                                        wire:target="addComment({{ $video->id }})"
+                                        class="shrink-0 inline-flex items-center justify-center rounded-md bg-zinc-900 text-white hover:bg-zinc-800 px-3 h-9 text-sm font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none self-start">
+                                    {{ __('Send') }}
+                                </button>
+                            </div>
+                            @error('commentText') <p class="text-xs text-red-500">{{ $message }}</p> @enderror
+                        </div>
+                    @endif
                 </div>
             @endforeach
         </div>
