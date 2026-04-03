@@ -4,6 +4,7 @@ namespace App\Livewire\Student\Classrooms;
 
 use App\Models\Classroom;
 use App\Models\Video;
+use App\Models\VideoAttendance;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 
@@ -39,6 +40,18 @@ class Show extends Component
         $this->playingVideoUrl = null;
     }
 
+    public function markAttendance(int $videoId): void
+    {
+        $video = Video::where('classroom_id', $this->classroom->id)->findOrFail($videoId);
+
+        abort_unless($video->isAttendanceOpen(), 403);
+
+        VideoAttendance::firstOrCreate([
+            'video_id' => $videoId,
+            'user_id' => auth()->id(),
+        ]);
+    }
+
     public function render()
     {
         $videos = Video::where('classroom_id', $this->classroom->id)
@@ -46,7 +59,12 @@ class Show extends Component
             ->latest()
             ->get();
 
-        return view('livewire.student.classrooms.show', compact('videos'))
+        $attendedVideoIds = VideoAttendance::where('user_id', auth()->id())
+            ->whereIn('video_id', $videos->pluck('id'))
+            ->pluck('video_id')
+            ->toArray();
+
+        return view('livewire.student.classrooms.show', compact('videos', 'attendedVideoIds'))
             ->layout('components.layouts.portal');
     }
 }

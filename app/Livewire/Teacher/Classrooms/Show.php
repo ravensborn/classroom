@@ -28,6 +28,8 @@ class Show extends Component
 
     public ?int $confirmingDeleteId = null;
 
+    public ?int $showingAttendanceForVideoId = null;
+
     public function mount(Classroom $classroom): void
     {
         // Ensure teacher is assigned to this classroom
@@ -135,6 +137,11 @@ class Show extends Component
         $this->confirmingDeleteId = null;
     }
 
+    public function toggleAttendance(int $videoId): void
+    {
+        $this->showingAttendanceForVideoId = $this->showingAttendanceForVideoId === $videoId ? null : $videoId;
+    }
+
     public function render()
     {
         $videos = Video::where('classroom_id', $this->classroom->id)
@@ -143,7 +150,15 @@ class Show extends Component
             ->latest()
             ->get();
 
-        return view('livewire.teacher.classrooms.show', compact('videos'))
+        $attendances = collect();
+        if ($this->showingAttendanceForVideoId) {
+            $attendances = \App\Models\VideoAttendance::where('video_id', $this->showingAttendanceForVideoId)
+                ->with('student.department')
+                ->latest()
+                ->get();
+        }
+
+        return view('livewire.teacher.classrooms.show', compact('videos', 'attendances'))
             ->layout('components.layouts.portal');
     }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Video extends Model
 {
@@ -17,5 +18,15 @@ class Video extends Model
     public function teacher(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(VideoAttendance::class);
+    }
+
+    public function isAttendanceOpen(): bool
+    {
+        return $this->created_at->addDays(3)->isFuture();
     }
 }
