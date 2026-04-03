@@ -167,7 +167,7 @@
                                                 <span class="text-sm font-medium text-zinc-800">{{ $attendance->student->name }}</span>
                                                 <span class="text-xs text-zinc-400 ms-2">{{ $attendance->student->department?->name }} · {{ __('Stage') }} {{ $attendance->student->stage }}</span>
                                             </div>
-                                            <span class="text-xs text-zinc-400">{{ $attendance->created_at->diffForHumans() }}</span>
+                                            <span class="text-xs text-zinc-400">{{ $attendance->created_at->locale('en')->diffForHumans() }}</span>
                                         </div>
                                     @endforeach
                                 </div>
