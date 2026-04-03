@@ -32,11 +32,11 @@ class Video extends Model
 
     public function isAttendanceOpen(): bool
     {
-        return $this->created_at->addDays(3)->isFuture();
+        return $this->created_at->addDays(2)->isFuture();
     }
 
     public function attendanceRemainingForHumans(): string
     {
-        return $this->created_at->addDays(3)->locale('en')->diffForHumans();
+        return $this->created_at->addDays(2)->locale('en')->diffForHumans();
     }
 }

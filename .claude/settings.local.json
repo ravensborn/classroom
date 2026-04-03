@@ -29,7 +29,8 @@
       "Read(//usr/local/bin/**)",
       "Read(//root/.nvm/versions/**)",
       "mcp__laravel-boost__get-absolute-url",
-      "mcp__laravel-boost__database-query"
+      "mcp__laravel-boost__database-query",
+      "Bash(php -i)"
     ]
   },
   "enableAllProjectMcpServers": true,
