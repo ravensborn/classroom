@@ -16,17 +16,45 @@
     {{-- Upload modal --}}
     @if($showUploadModal)
         <div class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-            <div class="bg-white rounded-lg border border-zinc-200 shadow-xl w-full max-w-md p-6">
+            <div class="bg-white rounded-lg border border-zinc-200 shadow-xl w-full max-w-md p-6"
+                 x-data="{
+                     uploading: false,
+                     uploaded: false,
+                     progress: 0,
+                     uploadError: null,
+                     async handleFile(event) {
+                         const file = event.target.files[0];
+                         if (!file) return;
+                         const ext = file.name.split('.').pop().toLowerCase();
+                         this.uploading = true;
+                         this.uploaded = false;
+                         this.progress = 0;
+                         this.uploadError = null;
+                         try {
+                             const { url } = await $wire.getPresignedUploadUrl(ext);
+                             await new Promise((resolve, reject) => {
+                                 const xhr = new XMLHttpRequest();
+                                 xhr.upload.onprogress = (e) => {
+                                     if (e.lengthComputable) this.progress = Math.round(e.loaded / e.total * 100);
+                                 };
+                                 xhr.onload = () => xhr.status >= 200 && xhr.status < 300 ? resolve() : reject();
+                                 xhr.onerror = reject;
+                                 xhr.open('PUT', url);
+                                 xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
+                                 xhr.send(file);
+                             });
+                             this.uploaded = true;
+                         } catch {
+                             this.uploadError = '{{ __('Upload failed. Please try again.') }}';
+                         } finally {
+                             this.uploading = false;
+                         }
+                     }
+                 }">
                 <h3 class="text-lg font-semibold text-zinc-900 mb-1">{{ __('Upload Video') }}</h3>
                 <p class="text-sm text-zinc-500 mb-4">{{ __('Add a new video to this classroom.') }}</p>
                 <div class="border-t border-zinc-100 my-4"></div>
-                <form wire:submit="uploadVideo" class="space-y-4"
-                      x-data="{ uploading: false, progress: 0 }"
-                      x-on:livewire-upload-start="uploading = true; progress = 0"
-                      x-on:livewire-upload-finish="uploading = false"
-                      x-on:livewire-upload-cancel="uploading = false"
-                      x-on:livewire-upload-error="uploading = false"
-                      x-on:livewire-upload-progress="progress = $event.detail.progress">
+                <form wire:submit="saveVideoRecord" class="space-y-4">
                     <div>
                         <label class="text-sm font-medium text-zinc-700 block mb-1">{{ __('Video Title') }}</label>
                         <input wire:model="title" type="text"
@@ -41,10 +69,12 @@
                     </div>
                     <div>
                         <label class="text-sm font-medium text-zinc-700 block mb-1">{{ __('Video File') }}</label>
-                        <input wire:model="videoFile" type="file" accept=".mp4,.mov,.avi"
-                               class="w-full text-sm text-zinc-500 file:me-4 file:py-1.5 file:px-3 file:rounded-md file:border file:border-zinc-200 file:text-sm file:font-medium file:bg-white file:text-zinc-700 hover:file:bg-zinc-50 transition-colors">
-                        @error('videoFile') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
-                        <p class="mt-1 text-xs text-zinc-400">{{ __('Select video file (MP4, MOV, AVI)') }} — {{ __('Max file size: 500MB') }}</p>
+                        <input type="file" accept=".mp4,.mov,.avi"
+                               x-on:change="handleFile($event)"
+                               x-bind:disabled="uploading"
+                               class="w-full text-sm text-zinc-500 file:me-4 file:py-1.5 file:px-3 file:rounded-md file:border file:border-zinc-200 file:text-sm file:font-medium file:bg-white file:text-zinc-700 hover:file:bg-zinc-50 transition-colors disabled:opacity-50">
+                        @error('pendingFilePath') <p class="text-xs text-red-500 mt-1">{{ __('Please select a video file.') }}</p> @enderror
+                        <p class="mt-1 text-xs text-zinc-400" x-show="!uploading && !uploaded">{{ __('Select video file (MP4, MOV, AVI)') }} — {{ __('Max file size: 500MB') }}</p>
 
                         <div x-show="uploading" x-cloak class="mt-3 space-y-1">
                             <div class="flex justify-between text-xs text-zinc-500">
@@ -56,15 +86,21 @@
                                      x-bind:style="'width: ' + progress + '%'"></div>
                             </div>
                         </div>
+
+                        <p x-show="uploaded" x-cloak class="mt-2 text-xs text-emerald-600 font-medium">
+                            <svg class="w-3.5 h-3.5 inline -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            {{ __('File uploaded successfully') }}
+                        </p>
+                        <p x-show="uploadError" x-cloak x-text="uploadError" class="mt-2 text-xs text-red-500"></p>
                     </div>
                     <div class="flex gap-3 pt-2 justify-end">
                         <button type="button" wire:click="closeUploadModal" class="inline-flex items-center justify-center rounded-md text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 px-3 h-9 transition-colors">{{ __('Cancel') }}</button>
                         <button type="submit"
                                 class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-zinc-900 text-zinc-50 hover:bg-zinc-800 px-4 h-9 transition-colors disabled:opacity-50 disabled:pointer-events-none"
-                                wire:loading.attr="disabled" wire:loading.class="opacity-75"
-                                x-bind:disabled="uploading">
-                            <span wire:loading.remove wire:target="uploadVideo">{{ __('Upload') }}</span>
-                            <span wire:loading wire:target="uploadVideo">{{ __('Uploading...') }}</span>
+                                x-bind:disabled="uploading || !uploaded"
+                                wire:loading.attr="disabled">
+                            <span wire:loading.remove wire:target="saveVideoRecord">{{ __('Save') }}</span>
+                            <span wire:loading wire:target="saveVideoRecord">...</span>
                         </button>
                     </div>
                 </form>

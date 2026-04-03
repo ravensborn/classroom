@@ -5,13 +5,11 @@ namespace App\Livewire\Teacher\Classrooms;
 use App\Models\Classroom;
 use App\Models\Video;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Livewire\Component;
-use Livewire\WithFileUploads;
 
 class Show extends Component
 {
-    use WithFileUploads;
-
     public Classroom $classroom;
 
     public bool $showUploadModal = false;
@@ -24,7 +22,7 @@ class Show extends Component
 
     public string $description = '';
 
-    public $videoFile = null;
+    public string $pendingFilePath = '';
 
     public ?int $confirmingDeleteId = null;
 
@@ -34,7 +32,6 @@ class Show extends Component
 
     public function mount(Classroom $classroom): void
     {
-        // Ensure teacher is assigned to this classroom
         abort_unless(
             auth()->user()->classrooms()->where('classrooms.id', $classroom->id)->exists(),
             403
@@ -45,40 +42,61 @@ class Show extends Component
 
     public function openUploadModal(): void
     {
-        $this->reset(['title', 'description', 'videoFile']);
+        $this->reset(['title', 'description', 'pendingFilePath']);
         $this->showUploadModal = true;
     }
 
     public function closeUploadModal(): void
     {
         $this->showUploadModal = false;
-        $this->reset(['title', 'description', 'videoFile']);
+        $this->reset(['title', 'description', 'pendingFilePath']);
     }
 
-    public function uploadVideo(): void
+    /**
+     * Generate a presigned PUT URL so the browser can upload directly to R2,
+     * bypassing Cloudflare's 100 MB request limit.
+     *
+     * @return array{url: string, path: string}
+     */
+    public function getPresignedUploadUrl(string $extension): array
+    {
+        $allowed = ['mp4', 'mov', 'avi'];
+        abort_unless(in_array(strtolower($extension), $allowed), 422);
+
+        $path = 'videos/'.Str::uuid().'.'.$extension;
+
+        $client = Storage::disk('r2')->getAdapter()->getClient();
+
+        $command = $client->getCommand('PutObject', [
+            'Bucket' => config('filesystems.disks.r2.bucket'),
+            'Key' => $path,
+        ]);
+
+        $presignedUrl = (string) $client->createPresignedRequest($command, '+60 minutes')->getUri();
+
+        $this->pendingFilePath = $path;
+
+        return ['url' => $presignedUrl, 'path' => $path];
+    }
+
+    public function saveVideoRecord(): void
     {
         $this->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
-            'videoFile' => ['required', 'file', 'mimes:mp4,mov,avi', 'max:512000'],
+            'pendingFilePath' => ['required', 'string'],
         ]);
-
-        $path = $this->videoFile->storeAs(
-            'videos',
-            \Illuminate\Support\Str::uuid().'.'.$this->videoFile->getClientOriginalExtension(),
-            'r2'
-        );
 
         Video::create([
             'classroom_id' => $this->classroom->id,
             'user_id' => auth()->id(),
             'title' => $this->title,
             'description' => $this->description,
-            'file_path' => $path,
+            'file_path' => $this->pendingFilePath,
         ]);
 
         $this->showUploadModal = false;
-        $this->reset(['title', 'description', 'videoFile']);
+        $this->reset(['title', 'description', 'pendingFilePath']);
     }
 
     public function openEditModal(int $videoId): void
