@@ -27,7 +27,9 @@
       "mcp__laravel-boost__browser-logs",
       "mcp__laravel-boost__last-error",
       "Read(//usr/local/bin/**)",
-      "Read(//root/.nvm/versions/**)"
+      "Read(//root/.nvm/versions/**)",
+      "mcp__laravel-boost__get-absolute-url",
+      "mcp__laravel-boost__database-query"
     ]
   },
   "enableAllProjectMcpServers": true,

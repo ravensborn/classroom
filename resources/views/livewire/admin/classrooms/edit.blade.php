@@ -17,16 +17,20 @@
         {{-- Assign Teachers --}}
         <div class="rounded-lg border border-zinc-200 bg-white shadow-sm p-6">
             <h3 class="text-base font-semibold text-zinc-900 mb-4">{{ __('Assign Teachers') }}</h3>
+            <div class="mb-3">
+                <input wire:model.live.debounce.300ms="teacherSearch" type="text" placeholder="{{ __('Search by name') }}..."
+                       class="flex h-9 w-full sm:max-w-sm rounded-md border border-zinc-200 bg-white px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-900">
+            </div>
             <div class="space-y-1 max-h-64 overflow-y-auto">
                 @forelse($teachers as $teacher)
-                    <label class="flex items-center gap-3 cursor-pointer hover:bg-zinc-50 px-2 py-1.5 rounded-md">
+                    <label wire:key="teacher-{{ $teacher->id }}" class="flex items-center gap-3 cursor-pointer hover:bg-zinc-50 px-2 py-1.5 rounded-md">
                         <input type="checkbox" wire:model="selectedTeacherIds" value="{{ $teacher->id }}"
                                class="rounded border-zinc-300 text-zinc-900 w-4 h-4">
                         <span class="text-sm text-zinc-700">{{ $teacher->name }}</span>
                         <span class="text-xs text-zinc-400">@{{ $teacher->username }}</span>
                     </label>
                 @empty
-                    <p class="text-sm text-zinc-400">{{ __('No classrooms yet') }}</p>
+                    <p class="text-sm text-zinc-400">{{ __('No teachers found') }}</p>
                 @endforelse
             </div>
         </div>
@@ -34,16 +38,34 @@
         {{-- Enroll Students --}}
         <div class="rounded-lg border border-zinc-200 bg-white shadow-sm p-6">
             <h3 class="text-base font-semibold text-zinc-900 mb-4">{{ __('Enroll Students') }}</h3>
+            <div class="flex flex-wrap gap-2 mb-3">
+                <input wire:model.live.debounce.300ms="studentSearch" type="text" placeholder="{{ __('Search by name') }}..."
+                       class="flex h-9 w-full sm:max-w-xs rounded-md border border-zinc-200 bg-white px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-900">
+                <select wire:model.live="studentStage"
+                        class="h-9 rounded-md border border-zinc-200 bg-white px-3 py-1 text-sm shadow-sm transition-colors text-zinc-700 focus:outline-none focus:ring-1 focus:ring-zinc-900">
+                    <option value="">{{ __('All Stages') }}</option>
+                    @foreach($stages as $stage)
+                        <option value="{{ $stage }}">{{ __('Stage') }} {{ $stage }}</option>
+                    @endforeach
+                </select>
+                <select wire:model.live="studentDepartment"
+                        class="h-9 rounded-md border border-zinc-200 bg-white px-3 py-1 text-sm shadow-sm transition-colors text-zinc-700 focus:outline-none focus:ring-1 focus:ring-zinc-900">
+                    <option value="">{{ __('All Departments') }}</option>
+                    @foreach($departments as $department)
+                        <option value="{{ $department->id }}">{{ $department->name }}</option>
+                    @endforeach
+                </select>
+            </div>
             <div class="space-y-1 max-h-64 overflow-y-auto">
                 @forelse($students as $student)
-                    <label class="flex items-center gap-3 cursor-pointer hover:bg-zinc-50 px-2 py-1.5 rounded-md">
+                    <label wire:key="student-{{ $student->id }}" class="flex items-center gap-3 cursor-pointer hover:bg-zinc-50 px-2 py-1.5 rounded-md">
                         <input type="checkbox" wire:model="selectedStudentIds" value="{{ $student->id }}"
                                class="rounded border-zinc-300 text-zinc-900 w-4 h-4">
                         <span class="text-sm text-zinc-700">{{ $student->name }}</span>
                         <span class="text-xs text-zinc-400">{{ $student->department?->name }} · {{ __('Stage') }} {{ $student->stage }}</span>
                     </label>
                 @empty
-                    <p class="text-sm text-zinc-400">{{ __('No classrooms yet') }}</p>
+                    <p class="text-sm text-zinc-400">{{ __('No students found') }}</p>
                 @endforelse
             </div>
         </div>
