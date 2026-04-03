@@ -20,7 +20,13 @@
                 <h3 class="text-lg font-semibold text-zinc-900 mb-1">{{ __('Upload Video') }}</h3>
                 <p class="text-sm text-zinc-500 mb-4">{{ __('Add a new video to this classroom.') }}</p>
                 <div class="border-t border-zinc-100 my-4"></div>
-                <form wire:submit="uploadVideo" class="space-y-4">
+                <form wire:submit="uploadVideo" class="space-y-4"
+                      x-data="{ uploading: false, progress: 0 }"
+                      x-on:livewire-upload-start="uploading = true; progress = 0"
+                      x-on:livewire-upload-finish="uploading = false"
+                      x-on:livewire-upload-cancel="uploading = false"
+                      x-on:livewire-upload-error="uploading = false"
+                      x-on:livewire-upload-progress="progress = $event.detail.progress">
                     <div>
                         <label class="text-sm font-medium text-zinc-700 block mb-1">{{ __('Video Title') }}</label>
                         <input wire:model="title" type="text"
@@ -39,13 +45,24 @@
                                class="w-full text-sm text-zinc-500 file:me-4 file:py-1.5 file:px-3 file:rounded-md file:border file:border-zinc-200 file:text-sm file:font-medium file:bg-white file:text-zinc-700 hover:file:bg-zinc-50 transition-colors">
                         @error('videoFile') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
                         <p class="mt-1 text-xs text-zinc-400">{{ __('Select video file (MP4, MOV, AVI)') }} — {{ __('Max file size: 500MB') }}</p>
-                        <div wire:loading wire:target="videoFile" class="mt-2 text-xs text-zinc-500">{{ __('Uploading...') }}</div>
+
+                        <div x-show="uploading" x-cloak class="mt-3 space-y-1">
+                            <div class="flex justify-between text-xs text-zinc-500">
+                                <span>{{ __('Uploading...') }}</span>
+                                <span x-text="progress + '%'"></span>
+                            </div>
+                            <div class="w-full bg-zinc-100 rounded-full h-2 overflow-hidden">
+                                <div class="bg-zinc-900 h-2 rounded-full transition-all duration-150"
+                                     x-bind:style="'width: ' + progress + '%'"></div>
+                            </div>
+                        </div>
                     </div>
                     <div class="flex gap-3 pt-2 justify-end">
                         <button type="button" wire:click="closeUploadModal" class="inline-flex items-center justify-center rounded-md text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 px-3 h-9 transition-colors">{{ __('Cancel') }}</button>
                         <button type="submit"
                                 class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-zinc-900 text-zinc-50 hover:bg-zinc-800 px-4 h-9 transition-colors disabled:opacity-50 disabled:pointer-events-none"
-                                wire:loading.attr="disabled" wire:loading.class="opacity-75">
+                                wire:loading.attr="disabled" wire:loading.class="opacity-75"
+                                x-bind:disabled="uploading">
                             <span wire:loading.remove wire:target="uploadVideo">{{ __('Upload') }}</span>
                             <span wire:loading wire:target="uploadVideo">{{ __('Uploading...') }}</span>
                         </button>
