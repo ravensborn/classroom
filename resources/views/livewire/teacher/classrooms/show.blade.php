@@ -151,7 +151,7 @@
                                 @if($isOpen)
                                     <span class="text-xs text-amber-600 font-medium">
                                         <svg class="w-3.5 h-3.5 inline -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                        <span dir="ltr" class="inline-block">{{ $video->attendanceRemainingForHumans() }}</span> {{ __('time remaining') }}
+                                        <span dir="ltr" class="inline-block">{{ $video->attendanceRemainingForHumans() }}</span>
                                     </span>
                                 @else
                                     <span class="text-xs text-zinc-400">{{ __('Attendance window closed') }}</span>
