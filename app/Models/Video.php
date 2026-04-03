@@ -29,4 +29,9 @@ class Video extends Model
     {
         return $this->created_at->addDays(3)->isFuture();
     }
+
+    public function attendanceRemainingForHumans(): string
+    {
+        return $this->created_at->addDays(3)->locale('en')->diffForHumans();
+    }
 }
