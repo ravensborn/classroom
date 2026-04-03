@@ -4,6 +4,7 @@ namespace App\Livewire\Teacher\Classrooms;
 
 use App\Models\Classroom;
 use App\Models\Video;
+use Aws\S3\S3Client;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -65,10 +66,21 @@ class Show extends Component
 
         $path = 'videos/'.Str::uuid().'.'.$extension;
 
-        $client = Storage::disk('r2')->getAdapter()->getClient();
+        $diskConfig = config('filesystems.disks.r2');
+
+        $client = new S3Client([
+            'credentials' => [
+                'key' => $diskConfig['key'],
+                'secret' => $diskConfig['secret'],
+            ],
+            'region' => $diskConfig['region'],
+            'endpoint' => $diskConfig['endpoint'],
+            'use_path_style_endpoint' => $diskConfig['use_path_style_endpoint'] ?? false,
+            'version' => 'latest',
+        ]);
 
         $command = $client->getCommand('PutObject', [
-            'Bucket' => config('filesystems.disks.r2.bucket'),
+            'Bucket' => $diskConfig['bucket'],
             'Key' => $path,
         ]);
 
