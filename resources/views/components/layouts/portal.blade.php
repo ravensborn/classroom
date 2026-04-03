@@ -26,6 +26,17 @@
                         <img src="{{ asset('logo.png') }}" alt="{{ __('Shaqlawa Private Institute') }}" class="w-7 h-7 rounded-full object-cover shrink-0">
                         <span class="truncate hidden sm:block">{{ __('Shaqlawa Private Institute') }}</span>
                     </a>
+                    <div class="flex flex-col leading-tight sm:hidden min-w-0">
+                        <span class="text-sm text-zinc-700 font-medium truncate max-w-40">{{ auth()->user()?->name }}</span>
+                        @if(auth()->user()?->isStudent())
+                            <span class="text-xs text-zinc-400 truncate">
+                                {{ auth()->user()->department?->name }}
+                                @if(auth()->user()->stage)
+                                    · {{ __('Stage') }} {{ auth()->user()->stage }}
+                                @endif
+                            </span>
+                        @endif
+                    </div>
                 </div>
                 <div class="flex items-center gap-1 shrink-0">
                     <div class="px-2 hidden sm:flex flex-col items-end leading-tight">
