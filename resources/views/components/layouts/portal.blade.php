@@ -28,7 +28,17 @@
                     </a>
                 </div>
                 <div class="flex items-center gap-1 shrink-0">
-                    <span class="text-sm text-zinc-500 px-2 hidden sm:block truncate max-w-32">{{ auth()->user()?->name }}</span>
+                    <div class="px-2 hidden sm:flex flex-col items-end leading-tight">
+                        <span class="text-sm text-zinc-700 font-medium truncate max-w-40">{{ auth()->user()?->name }}</span>
+                        @if(auth()->user()?->isStudent())
+                            <span class="text-xs text-zinc-400">
+                                {{ auth()->user()->department?->name }}
+                                @if(auth()->user()->stage)
+                                    · {{ __('Stage') }} {{ auth()->user()->stage }}
+                                @endif
+                            </span>
+                        @endif
+                    </div>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 rounded-md transition-colors">
