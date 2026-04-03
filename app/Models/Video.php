@@ -32,6 +32,6 @@ class Video extends Model
 
     public function attendanceRemainingForHumans(): string
     {
-        return $this->created_at->addDays(3)->locale('en')->diffForHumans();
+        return $this->created_at->addDays(3)->diffForHumans();
     }
 }
