@@ -3,16 +3,28 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
         {{-- Students --}}
-        <a href="{{ route('admin.students.index') }}" class="rounded-lg border border-zinc-200 bg-white shadow-sm p-6 flex items-center gap-4 hover:bg-zinc-50 transition-colors">
-            <div class="w-11 h-11 bg-zinc-100 rounded-full flex items-center justify-center shrink-0">
-                <svg class="w-5 h-5 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                </svg>
+        <a href="{{ route('admin.students.index') }}" class="rounded-lg border border-zinc-200 bg-white shadow-sm p-6 flex flex-col gap-4 hover:bg-zinc-50 transition-colors">
+            <div class="flex items-center gap-4">
+                <div class="w-11 h-11 bg-zinc-100 rounded-full flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-3xl font-semibold text-zinc-900">{{ $studentsCount }}</p>
+                    <p class="text-sm text-zinc-500 mt-0.5">{{ __('Total Students') }}</p>
+                </div>
             </div>
-            <div>
-                <p class="text-3xl font-semibold text-zinc-900">{{ $studentsCount }}</p>
-                <p class="text-sm text-zinc-500 mt-0.5">{{ __('Total Students') }}</p>
-            </div>
+            @if($studentsByDepartment->isNotEmpty())
+                <div class="border-t border-zinc-100 pt-3 space-y-2">
+                    @foreach($studentsByDepartment as $dept)
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-zinc-600">{{ $dept->name }}</span>
+                            <span class="font-semibold text-zinc-900">{{ $dept->students_count }}</span>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
         </a>
 
         {{-- Teachers --}}
