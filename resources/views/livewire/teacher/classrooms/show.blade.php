@@ -141,7 +141,7 @@
                             <div class="min-w-0">
                                 <h3 class="font-semibold text-zinc-900 truncate">{{ $video->title }}</h3>
                                 <p class="text-sm text-zinc-500 mt-0.5 line-clamp-2">{{ $video->description }}</p>
-                                <p class="text-xs text-zinc-400 mt-1">{{ $video->created_at->locale('en')->diffForHumans() }}</p>
+                                <p class="text-xs text-zinc-400 mt-1" dir="ltr">{{ $video->created_at->locale('en')->diffForHumans() }}</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-2 shrink-0">
