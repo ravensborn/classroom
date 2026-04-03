@@ -75,7 +75,7 @@ class Show extends Component
             ],
             'region' => $diskConfig['region'],
             'endpoint' => $diskConfig['endpoint'],
-            'use_path_style_endpoint' => $diskConfig['use_path_style_endpoint'] ?? false,
+            'use_path_style_endpoint' => true,
             'version' => 'latest',
         ]);
 
