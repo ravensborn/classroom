@@ -16,7 +16,13 @@
 
         {{-- Assign Teachers --}}
         <div class="rounded-lg border border-zinc-200 bg-white shadow-sm p-6">
-            <h3 class="text-base font-semibold text-zinc-900 mb-4">{{ __('Assign Teachers') }}</h3>
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-semibold text-zinc-900">{{ __('Assign Teachers') }}</h3>
+                <div class="flex gap-2">
+                    <button type="button" wire:click="selectAllTeachers" class="text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 px-2 py-1 rounded transition-colors">{{ __('Select All') }}</button>
+                    <button type="button" wire:click="deselectAllTeachers" class="text-xs font-medium text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 px-2 py-1 rounded transition-colors">{{ __('Deselect All') }}</button>
+                </div>
+            </div>
             <div class="mb-3">
                 <input wire:model.live.debounce.300ms="teacherSearch" type="text" placeholder="{{ __('Search by name') }}..."
                        class="flex h-9 w-full sm:max-w-sm rounded-md border border-zinc-200 bg-white px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-900">
@@ -37,7 +43,13 @@
 
         {{-- Enroll Students --}}
         <div class="rounded-lg border border-zinc-200 bg-white shadow-sm p-6">
-            <h3 class="text-base font-semibold text-zinc-900 mb-4">{{ __('Enroll Students') }}</h3>
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-semibold text-zinc-900">{{ __('Enroll Students') }}</h3>
+                <div class="flex gap-2">
+                    <button type="button" wire:click="selectAllStudents" class="text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 px-2 py-1 rounded transition-colors">{{ __('Select All') }}</button>
+                    <button type="button" wire:click="deselectAllStudents" class="text-xs font-medium text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 px-2 py-1 rounded transition-colors">{{ __('Deselect All') }}</button>
+                </div>
+            </div>
             <div class="flex flex-wrap gap-2 mb-3">
                 <input wire:model.live.debounce.300ms="studentSearch" type="text" placeholder="{{ __('Search by name') }}..."
                        class="flex h-9 w-full sm:max-w-xs rounded-md border border-zinc-200 bg-white px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-900">

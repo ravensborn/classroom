@@ -35,6 +35,50 @@ class Edit extends Component
         $this->selectedStudentIds = $classroom->students()->pluck('users.id')->toArray();
     }
 
+    public function selectAllTeachers(): void
+    {
+        $ids = User::teachers()
+            ->when($this->teacherSearch, fn ($q) => $q->where('name', 'ilike', "%{$this->teacherSearch}%"))
+            ->pluck('id')
+            ->toArray();
+
+        $this->selectedTeacherIds = array_values(array_unique(array_merge($this->selectedTeacherIds, $ids)));
+    }
+
+    public function deselectAllTeachers(): void
+    {
+        $ids = User::teachers()
+            ->when($this->teacherSearch, fn ($q) => $q->where('name', 'ilike', "%{$this->teacherSearch}%"))
+            ->pluck('id')
+            ->toArray();
+
+        $this->selectedTeacherIds = array_values(array_diff($this->selectedTeacherIds, $ids));
+    }
+
+    public function selectAllStudents(): void
+    {
+        $ids = User::students()
+            ->when($this->studentSearch, fn ($q) => $q->where('name', 'ilike', "%{$this->studentSearch}%"))
+            ->when($this->studentStage, fn ($q) => $q->where('stage', $this->studentStage))
+            ->when($this->studentDepartment, fn ($q) => $q->where('department_id', $this->studentDepartment))
+            ->pluck('id')
+            ->toArray();
+
+        $this->selectedStudentIds = array_values(array_unique(array_merge($this->selectedStudentIds, $ids)));
+    }
+
+    public function deselectAllStudents(): void
+    {
+        $ids = User::students()
+            ->when($this->studentSearch, fn ($q) => $q->where('name', 'ilike', "%{$this->studentSearch}%"))
+            ->when($this->studentStage, fn ($q) => $q->where('stage', $this->studentStage))
+            ->when($this->studentDepartment, fn ($q) => $q->where('department_id', $this->studentDepartment))
+            ->pluck('id')
+            ->toArray();
+
+        $this->selectedStudentIds = array_values(array_diff($this->selectedStudentIds, $ids));
+    }
+
     public function save(): void
     {
         $this->validate([
