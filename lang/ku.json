@@ -92,5 +92,9 @@
     "Attendance window closed": "کاتی ئامادەبوون تەواو بووە",
     "Attendees": "ئامادەبووان",
     "time remaining": "کاتی ماوە",
-    "No students have recorded attendance yet.": "هیچ قوتابێک ئامادەبوونی تۆمار نەکردووە."
+    "No students have recorded attendance yet.": "هیچ قوتابێک ئامادەبوونی تۆمار نەکردووە.",
+    "Attendance List": "لیستی ئامادەبوون",
+    "Attended": "ئامادەبوو",
+    "Absent": "نەبووە",
+    "Print": "چاپکردن"
 }

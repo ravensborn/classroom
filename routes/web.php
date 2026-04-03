@@ -14,6 +14,7 @@ use App\Livewire\Admin\Teachers\Index as TeachersIndex;
 use App\Livewire\Guest\Login;
 use App\Livewire\Student\Classrooms\Show as StudentClassroomShow;
 use App\Livewire\Student\Dashboard as StudentDashboard;
+use App\Http\Controllers\Teacher\AttendancePrintController;
 use App\Livewire\Teacher\Classrooms\Show as TeacherClassroomShow;
 use App\Livewire\Teacher\Dashboard as TeacherDashboard;
 use App\Livewire\Welcome;
@@ -57,6 +58,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')->group(function () {
     Route::get('/dashboard', TeacherDashboard::class)->name('dashboard');
     Route::get('/classrooms/{classroom}', TeacherClassroomShow::class)->name('classrooms.show');
+    Route::get('/classrooms/{classroom}/videos/{video}/attendance/print', AttendancePrintController::class)->name('classrooms.videos.attendance.print');
 });
 
 // Student routes
