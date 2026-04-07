@@ -1,7 +1,7 @@
 <div class="min-h-screen flex items-center justify-center px-4 py-12 bg-zinc-50">
     <div class="w-full max-w-md">
         {{-- Logo --}}
-        <div class="mb-8">
+        <div class="mb-8 text-center">
             <img src="{{ asset('logo.png') }}" alt="{{ __('Shaqlawa Private Institute') }}" class="w-24 h-24 rounded-full object-cover mx-auto mb-6 shadow-sm border border-zinc-200">
             <h1 class="text-2xl font-semibold tracking-tight text-zinc-900 mb-3">{{ __('Shaqlawa Private Institute') }}</h1>
             <p class="text-base text-zinc-500 mb-1">{{ __('Shaqlawa Private Institute') }}</p>
