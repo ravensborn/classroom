@@ -42,6 +42,8 @@
                         <td class="p-4 align-middle text-sm text-zinc-500">{{ $teacher->username }}</td>
                         <td class="p-4 align-middle text-sm">
                             <div class="flex items-center gap-3 justify-end">
+                                <a href="{{ route('admin.teachers.posts', $teacher) }}"
+                                   class="inline-flex items-center justify-center rounded-md text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 px-3 h-9 transition-colors">{{ __('Posts') }}</a>
                                 <a href="{{ route('admin.teachers.edit', $teacher) }}"
                                    class="inline-flex items-center justify-center rounded-md text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 px-3 h-9 transition-colors">{{ __('Edit') }}</a>
                                 <button wire:click="confirmDelete({{ $teacher->id }})"

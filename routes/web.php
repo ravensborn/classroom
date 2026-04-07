@@ -5,7 +5,7 @@ use App\Livewire\Admin\Classrooms\Edit as ClassroomsEdit;
 use App\Livewire\Admin\Classrooms\Index as ClassroomsIndex;
 use App\Livewire\Admin\Dashboard as AdminDashboard;
 use App\Livewire\Admin\Departments\Index as DepartmentsIndex;
-use App\Livewire\Admin\Posts\Index as PostsIndex;
+use App\Livewire\Admin\Teachers\Posts as TeachersPosts;
 use App\Livewire\Admin\Students\Create as StudentsCreate;
 use App\Livewire\Admin\Students\Edit as StudentsEdit;
 use App\Livewire\Admin\Students\Index as StudentsIndex;
@@ -47,14 +47,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/teachers', TeachersIndex::class)->name('teachers.index');
     Route::get('/teachers/create', TeachersCreate::class)->name('teachers.create');
     Route::get('/teachers/{user}/edit', TeachersEdit::class)->name('teachers.edit');
+    Route::get('/teachers/{user}/posts', TeachersPosts::class)->name('teachers.posts');
 
     Route::get('/classrooms', ClassroomsIndex::class)->name('classrooms.index');
     Route::get('/classrooms/create', ClassroomsCreate::class)->name('classrooms.create');
     Route::get('/classrooms/{classroom}/edit', ClassroomsEdit::class)->name('classrooms.edit');
 
     Route::get('/departments', DepartmentsIndex::class)->name('departments.index');
-
-    Route::get('/posts', PostsIndex::class)->name('posts.index');
 });
 
 // Teacher routes

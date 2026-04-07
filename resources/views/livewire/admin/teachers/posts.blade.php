@@ -1,11 +1,14 @@
 <div>
     <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
-        <h2 class="text-2xl font-semibold tracking-tight text-zinc-900">{{ __('Teacher Posts') }}</h2>
-    </div>
-
-    <div class="mb-4">
-        <input wire:model.live.debounce.300ms="search" type="text" placeholder="{{ __('Search') }}..."
-               class="flex h-9 w-full sm:max-w-sm rounded-md border border-zinc-200 bg-white px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-900">
+        <div class="flex items-center gap-3">
+            <a href="{{ route('admin.teachers.index') }}" class="text-zinc-400 hover:text-zinc-600 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            </a>
+            <div>
+                <h2 class="text-2xl font-semibold tracking-tight text-zinc-900">{{ $teacher->name }}</h2>
+                <p class="text-sm text-zinc-500">{{ __('Posts') }}</p>
+            </div>
+        </div>
     </div>
 
     @if($videos->isEmpty())
@@ -31,11 +34,6 @@
                                 <p class="text-sm text-zinc-500 mt-0.5 line-clamp-2">{{ $video->description }}</p>
                             @endif
                             <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-zinc-500">
-                                <span class="inline-flex items-center gap-1">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                                    {{ $video->teacher?->name ?? __('Unknown') }}
-                                </span>
-                                <span class="text-zinc-300">·</span>
                                 <span class="inline-flex items-center gap-1">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5"/></svg>
                                     {{ $video->classroom?->name ?? __('Unknown') }}
