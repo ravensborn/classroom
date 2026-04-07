@@ -1,12 +1,11 @@
 <div class="min-h-screen flex items-center justify-center px-4 py-12 bg-zinc-50">
     <div class="w-full max-w-md">
         {{-- Logo --}}
-        <div class="text-center mb-8">
-            <div class="w-12 h-12 bg-zinc-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                <img src="{{ asset('logo.png') }}" alt="{{ __('Shaqlawa Private Institute') }}" class="w-24 h-24 rounded-full object-cover mx-auto mb-6 shadow-sm border border-zinc-200">
-            </div>
-            <h1 class="text-2xl font-semibold tracking-tight text-zinc-900">{{ __('Shaqlawa Private Institute') }}</h1>
-            <p class="text-zinc-500 mt-1 text-sm">{{ __('Welcome back') }}</p>
+        <div class="mb-8">
+            <img src="{{ asset('logo.png') }}" alt="{{ __('Shaqlawa Private Institute') }}" class="w-24 h-24 rounded-full object-cover mx-auto mb-6 shadow-sm border border-zinc-200">
+            <h1 class="text-2xl font-semibold tracking-tight text-zinc-900 mb-3">{{ __('Shaqlawa Private Institute') }}</h1>
+            <p class="text-base text-zinc-500 mb-1">{{ __('Shaqlawa Private Institute') }}</p>
+            <p class="text-sm text-zinc-400">{{ __('Welcome back') }}</p>
         </div>
 
         {{-- Card --}}
