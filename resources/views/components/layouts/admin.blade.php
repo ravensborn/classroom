@@ -73,6 +73,10 @@
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
                     {{ __('Departments') }}
                 </a>
+                <a href="{{ route('admin.posts.index') }}" @click="open = false" class="flex items-center gap-2.5 px-3 py-2.5 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('admin.posts.*') ? 'bg-zinc-800 text-zinc-50' : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-50' }}">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    {{ __('Teacher Posts') }}
+                </a>
             </nav>
             <div class="p-3 border-t border-zinc-800">
                 <div class="flex items-center gap-2.5 px-3 py-2 mb-1">
@@ -124,6 +128,10 @@
                 <a href="{{ route('admin.departments.index') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('admin.departments.*') ? 'bg-zinc-800 text-zinc-50' : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-50' }}">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
                     {{ __('Departments') }}
+                </a>
+                <a href="{{ route('admin.posts.index') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('admin.posts.*') ? 'bg-zinc-800 text-zinc-50' : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-50' }}">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    {{ __('Teacher Posts') }}
                 </a>
             </nav>
             <div class="p-3 border-t border-zinc-800">
