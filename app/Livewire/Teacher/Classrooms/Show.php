@@ -3,7 +3,10 @@
 namespace App\Livewire\Teacher\Classrooms;
 
 use App\Models\Classroom;
-use App\Models\Video;
+use App\Models\Post;
+use App\Models\PostAttendance;
+use App\Models\PostComment;
+use App\Support\PostHtmlSanitizer;
 use Aws\S3\S3Client;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -17,19 +20,25 @@ class Show extends Component
 
     public bool $showEditModal = false;
 
-    public ?int $editingVideoId = null;
+    public ?int $editingPostId = null;
 
     public string $title = '';
 
     public string $description = '';
 
-    public string $pendingFilePath = '';
+    public ?string $pendingVideoPath = null;
+
+    public bool $removeExistingVideo = false;
 
     public ?int $confirmingDeleteId = null;
 
-    public ?int $showingAttendanceForVideoId = null;
+    public ?int $showingAttendanceForPostId = null;
 
-    public ?int $showingCommentsForVideoId = null;
+    public ?int $showingCommentsForPostId = null;
+
+    public ?int $playingPostId = null;
+
+    public ?string $playingVideoUrl = null;
 
     public function mount(Classroom $classroom): void
     {
@@ -43,14 +52,14 @@ class Show extends Component
 
     public function openUploadModal(): void
     {
-        $this->reset(['title', 'description', 'pendingFilePath']);
+        $this->reset(['title', 'description', 'pendingVideoPath', 'removeExistingVideo']);
         $this->showUploadModal = true;
     }
 
     public function closeUploadModal(): void
     {
         $this->showUploadModal = false;
-        $this->reset(['title', 'description', 'pendingFilePath']);
+        $this->reset(['title', 'description', 'pendingVideoPath', 'removeExistingVideo']);
     }
 
     /**
@@ -86,48 +95,50 @@ class Show extends Component
 
         $presignedUrl = (string) $client->createPresignedRequest($command, '+60 minutes')->getUri();
 
-        $this->pendingFilePath = $path;
+        $this->pendingVideoPath = $path;
 
         return ['url' => $presignedUrl, 'path' => $path];
     }
 
-    public function saveVideoRecord(): void
+    public function savePost(): void
     {
         $this->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
-            'pendingFilePath' => ['required', 'string'],
+            'pendingVideoPath' => ['nullable', 'string'],
         ]);
 
-        Video::create([
+        Post::create([
             'classroom_id' => $this->classroom->id,
             'user_id' => auth()->id(),
             'title' => $this->title,
-            'description' => $this->description,
-            'file_path' => $this->pendingFilePath,
+            'description' => PostHtmlSanitizer::clean($this->description),
+            'video_path' => $this->pendingVideoPath ?: null,
         ]);
 
         $this->showUploadModal = false;
-        $this->reset(['title', 'description', 'pendingFilePath']);
+        $this->reset(['title', 'description', 'pendingVideoPath', 'removeExistingVideo']);
     }
 
-    public function openEditModal(int $videoId): void
+    public function openEditModal(int $postId): void
     {
-        $video = Video::where('classroom_id', $this->classroom->id)
+        $post = Post::where('classroom_id', $this->classroom->id)
             ->where('user_id', auth()->id())
-            ->findOrFail($videoId);
+            ->findOrFail($postId);
 
-        $this->editingVideoId = $videoId;
-        $this->title = $video->title;
-        $this->description = $video->description;
+        $this->editingPostId = $postId;
+        $this->title = $post->title;
+        $this->description = $post->description;
+        $this->pendingVideoPath = null;
+        $this->removeExistingVideo = false;
         $this->showEditModal = true;
     }
 
     public function closeEditModal(): void
     {
         $this->showEditModal = false;
-        $this->editingVideoId = null;
-        $this->reset(['title', 'description']);
+        $this->editingPostId = null;
+        $this->reset(['title', 'description', 'pendingVideoPath', 'removeExistingVideo']);
     }
 
     public function saveEdit(): void
@@ -135,31 +146,51 @@ class Show extends Component
         $this->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
+            'pendingVideoPath' => ['nullable', 'string'],
         ]);
 
-        Video::where('classroom_id', $this->classroom->id)
+        $post = Post::where('classroom_id', $this->classroom->id)
             ->where('user_id', auth()->id())
-            ->findOrFail($this->editingVideoId)
-            ->update(['title' => $this->title, 'description' => $this->description]);
+            ->findOrFail($this->editingPostId);
+
+        $newVideoPath = $post->video_path;
+
+        if ($this->pendingVideoPath) {
+            if ($post->video_path) {
+                Storage::disk('r2')->delete($post->video_path);
+            }
+            $newVideoPath = $this->pendingVideoPath;
+        } elseif ($this->removeExistingVideo && $post->video_path) {
+            Storage::disk('r2')->delete($post->video_path);
+            $newVideoPath = null;
+        }
+
+        $post->update([
+            'title' => $this->title,
+            'description' => PostHtmlSanitizer::clean($this->description),
+            'video_path' => $newVideoPath,
+        ]);
 
         $this->showEditModal = false;
-        $this->editingVideoId = null;
-        $this->reset(['title', 'description']);
+        $this->editingPostId = null;
+        $this->reset(['title', 'description', 'pendingVideoPath', 'removeExistingVideo']);
     }
 
-    public function confirmDelete(int $videoId): void
+    public function confirmDelete(int $postId): void
     {
-        $this->confirmingDeleteId = $videoId;
+        $this->confirmingDeleteId = $postId;
     }
 
-    public function deleteVideo(): void
+    public function deletePost(): void
     {
-        $video = Video::where('classroom_id', $this->classroom->id)
+        $post = Post::where('classroom_id', $this->classroom->id)
             ->where('user_id', auth()->id())
             ->findOrFail($this->confirmingDeleteId);
 
-        Storage::disk('r2')->delete($video->file_path);
-        $video->delete();
+        if ($post->video_path) {
+            Storage::disk('r2')->delete($post->video_path);
+        }
+        $post->delete();
 
         $this->confirmingDeleteId = null;
     }
@@ -169,26 +200,44 @@ class Show extends Component
         $this->confirmingDeleteId = null;
     }
 
-    public function toggleAttendance(int $videoId): void
+    public function playVideo(int $postId): void
     {
-        $this->showingAttendanceForVideoId = $this->showingAttendanceForVideoId === $videoId ? null : $videoId;
+        $post = Post::where('classroom_id', $this->classroom->id)
+            ->where('user_id', auth()->id())
+            ->findOrFail($postId);
+
+        abort_unless($post->hasVideo(), 404);
+
+        $this->playingPostId = $postId;
+        $this->playingVideoUrl = Storage::disk('r2')->temporaryUrl($post->video_path, now()->addHours(2));
     }
 
-    public function toggleComments(int $videoId): void
+    public function closePlayer(): void
     {
-        $this->showingCommentsForVideoId = $this->showingCommentsForVideoId === $videoId ? null : $videoId;
+        $this->playingPostId = null;
+        $this->playingVideoUrl = null;
+    }
+
+    public function toggleAttendance(int $postId): void
+    {
+        $this->showingAttendanceForPostId = $this->showingAttendanceForPostId === $postId ? null : $postId;
+    }
+
+    public function toggleComments(int $postId): void
+    {
+        $this->showingCommentsForPostId = $this->showingCommentsForPostId === $postId ? null : $postId;
     }
 
     public function deleteComment(int $commentId): void
     {
-        \App\Models\VideoComment::whereHas('video', fn ($q) => $q->where('classroom_id', $this->classroom->id))
+        PostComment::whereHas('post', fn ($q) => $q->where('classroom_id', $this->classroom->id))
             ->findOrFail($commentId)
             ->delete();
     }
 
     public function render()
     {
-        $videos = Video::where('classroom_id', $this->classroom->id)
+        $posts = Post::where('classroom_id', $this->classroom->id)
             ->where('user_id', auth()->id())
             ->with('teacher')
             ->withCount('comments')
@@ -196,22 +245,22 @@ class Show extends Component
             ->get();
 
         $attendances = collect();
-        if ($this->showingAttendanceForVideoId) {
-            $attendances = \App\Models\VideoAttendance::where('video_id', $this->showingAttendanceForVideoId)
+        if ($this->showingAttendanceForPostId) {
+            $attendances = PostAttendance::where('post_id', $this->showingAttendanceForPostId)
                 ->with('student.department')
                 ->latest()
                 ->get();
         }
 
         $comments = collect();
-        if ($this->showingCommentsForVideoId) {
-            $comments = \App\Models\VideoComment::where('video_id', $this->showingCommentsForVideoId)
+        if ($this->showingCommentsForPostId) {
+            $comments = PostComment::where('post_id', $this->showingCommentsForPostId)
                 ->with('author.department')
                 ->latest()
                 ->get();
         }
 
-        return view('livewire.teacher.classrooms.show', compact('videos', 'attendances', 'comments'))
+        return view('livewire.teacher.classrooms.show', compact('posts', 'attendances', 'comments'))
             ->layout('components.layouts.portal');
     }
 }

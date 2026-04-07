@@ -3,9 +3,9 @@
 namespace App\Livewire\Student\Classrooms;
 
 use App\Models\Classroom;
-use App\Models\Video;
-use App\Models\VideoAttendance;
-use App\Models\VideoComment;
+use App\Models\Post;
+use App\Models\PostAttendance;
+use App\Models\PostComment;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 
@@ -13,11 +13,11 @@ class Show extends Component
 {
     public Classroom $classroom;
 
-    public ?int $playingVideoId = null;
+    public ?int $playingPostId = null;
 
     public ?string $playingVideoUrl = null;
 
-    public ?int $showingCommentsForVideoId = null;
+    public ?int $showingCommentsForPostId = null;
 
     public string $commentText = '';
 
@@ -31,38 +31,40 @@ class Show extends Component
         $this->classroom = $classroom;
     }
 
-    public function playVideo(int $videoId): void
+    public function playVideo(int $postId): void
     {
-        $video = Video::where('classroom_id', $this->classroom->id)->findOrFail($videoId);
+        $post = Post::where('classroom_id', $this->classroom->id)->findOrFail($postId);
 
-        $this->playingVideoId = $videoId;
-        $this->playingVideoUrl = Storage::disk('r2')->temporaryUrl($video->file_path, now()->addHours(2));
+        abort_unless($post->hasVideo(), 404);
+
+        $this->playingPostId = $postId;
+        $this->playingVideoUrl = Storage::disk('r2')->temporaryUrl($post->video_path, now()->addHours(2));
     }
 
     public function closePlayer(): void
     {
-        $this->playingVideoId = null;
+        $this->playingPostId = null;
         $this->playingVideoUrl = null;
     }
 
-    public function toggleComments(int $videoId): void
+    public function toggleComments(int $postId): void
     {
-        if ($this->showingCommentsForVideoId === $videoId) {
-            $this->showingCommentsForVideoId = null;
+        if ($this->showingCommentsForPostId === $postId) {
+            $this->showingCommentsForPostId = null;
         } else {
-            $this->showingCommentsForVideoId = $videoId;
+            $this->showingCommentsForPostId = $postId;
             $this->commentText = '';
         }
     }
 
-    public function addComment(int $videoId): void
+    public function addComment(int $postId): void
     {
-        Video::where('classroom_id', $this->classroom->id)->findOrFail($videoId);
+        Post::where('classroom_id', $this->classroom->id)->findOrFail($postId);
 
         $this->validate(['commentText' => ['required', 'string', 'max:1000']]);
 
-        VideoComment::create([
-            'video_id' => $videoId,
+        PostComment::create([
+            'post_id' => $postId,
             'user_id' => auth()->id(),
             'body' => $this->commentText,
         ]);
@@ -72,35 +74,35 @@ class Show extends Component
 
     public function deleteComment(int $commentId): void
     {
-        VideoComment::where('user_id', auth()->id())->findOrFail($commentId)->delete();
+        PostComment::where('user_id', auth()->id())->findOrFail($commentId)->delete();
     }
 
-    public function markAttendance(int $videoId): void
+    public function markAttendance(int $postId): void
     {
-        $video = Video::where('classroom_id', $this->classroom->id)->findOrFail($videoId);
+        $post = Post::where('classroom_id', $this->classroom->id)->findOrFail($postId);
 
-        abort_unless($video->isAttendanceOpen(), 403);
+        abort_unless($post->isAttendanceOpen(), 403);
 
-        VideoAttendance::firstOrCreate([
-            'video_id' => $videoId,
+        PostAttendance::firstOrCreate([
+            'post_id' => $postId,
             'user_id' => auth()->id(),
         ]);
     }
 
     public function render()
     {
-        $videos = Video::where('classroom_id', $this->classroom->id)
+        $posts = Post::where('classroom_id', $this->classroom->id)
             ->with(['teacher', 'comments' => fn ($q) => $q->with('author')])
             ->withCount('comments')
             ->latest()
             ->get();
 
-        $attendedVideoIds = VideoAttendance::where('user_id', auth()->id())
-            ->whereIn('video_id', $videos->pluck('id'))
-            ->pluck('video_id')
+        $attendedPostIds = PostAttendance::where('user_id', auth()->id())
+            ->whereIn('post_id', $posts->pluck('id'))
+            ->pluck('post_id')
             ->toArray();
 
-        return view('livewire.student.classrooms.show', compact('videos', 'attendedVideoIds'))
+        return view('livewire.student.classrooms.show', compact('posts', 'attendedPostIds'))
             ->layout('components.layouts.portal');
     }
 }

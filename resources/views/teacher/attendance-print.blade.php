@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ __('Attendance') }} — {{ $video->title }}</title>
+    <title>{{ __('Attendance') }} — {{ $post->title }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -148,10 +148,10 @@
     <div class="header">
         <div>
             <div class="header-title">{{ __('Attendance List') }} — {{ $classroom->name }}</div>
-            <div class="header-meta">{{ $video->title }}</div>
-            <div class="header-meta">{{ $video->description }}</div>
+            <div class="header-meta">{{ $post->title }}</div>
+            <div class="header-meta">{{ strip_tags($post->description) }}</div>
         </div>
-        <div class="header-date">{{ $video->created_at->format('Y/m/d') }}</div>
+        <div class="header-date">{{ $post->created_at->format('Y/m/d') }}</div>
     </div>
 
     <div class="summary">

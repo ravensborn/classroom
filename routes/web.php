@@ -60,7 +60,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')->group(function () {
     Route::get('/dashboard', TeacherDashboard::class)->name('dashboard');
     Route::get('/classrooms/{classroom}', TeacherClassroomShow::class)->name('classrooms.show');
-    Route::get('/classrooms/{classroom}/videos/{video}/attendance/print', AttendancePrintController::class)->name('classrooms.videos.attendance.print');
+    Route::get('/classrooms/{classroom}/posts/{post}/attendance/print', AttendancePrintController::class)->name('classrooms.posts.attendance.print');
 });
 
 // Student routes

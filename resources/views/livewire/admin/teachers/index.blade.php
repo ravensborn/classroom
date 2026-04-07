@@ -32,6 +32,7 @@
                 <tr class="border-b border-zinc-200">
                     <th class="h-10 px-4 text-right align-middle font-medium text-zinc-500 text-xs">{{ __('Name') }}</th>
                     <th class="h-10 px-4 text-right align-middle font-medium text-zinc-500 text-xs">{{ __('Username') }}</th>
+                    <th class="h-10 px-4 text-right align-middle font-medium text-zinc-500 text-xs">{{ __('Posts') }}</th>
                     <th class="h-10 px-4"></th>
                 </tr>
             </thead>
@@ -40,6 +41,7 @@
                     <tr class="border-b border-zinc-100 hover:bg-zinc-50/50 transition-colors">
                         <td class="p-4 align-middle text-sm font-medium text-zinc-900">{{ $teacher->name }}</td>
                         <td class="p-4 align-middle text-sm text-zinc-500">{{ $teacher->username }}</td>
+                        <td class="p-4 align-middle text-sm text-zinc-700">{{ $teacher->posts_count }}</td>
                         <td class="p-4 align-middle text-sm">
                             <div class="flex items-center gap-3 justify-end">
                                 <a href="{{ route('admin.teachers.posts', $teacher) }}"
@@ -53,7 +55,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="3" class="text-center py-16 text-zinc-400">
+                        <td colspan="4" class="text-center py-16 text-zinc-400">
                             <svg class="w-10 h-10 mx-auto mb-3 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                             </svg>

@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Video extends Model
+class Post extends Model
 {
-    protected $fillable = ['classroom_id', 'user_id', 'title', 'description', 'file_path'];
+    protected $fillable = ['classroom_id', 'user_id', 'title', 'description', 'video_path'];
 
     public function classroom(): BelongsTo
     {
@@ -22,12 +22,17 @@ class Video extends Model
 
     public function attendances(): HasMany
     {
-        return $this->hasMany(VideoAttendance::class);
+        return $this->hasMany(PostAttendance::class);
     }
 
     public function comments(): HasMany
     {
-        return $this->hasMany(VideoComment::class)->latest();
+        return $this->hasMany(PostComment::class)->latest();
+    }
+
+    public function hasVideo(): bool
+    {
+        return filled($this->video_path);
     }
 
     public function isAttendanceOpen(): bool

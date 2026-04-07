@@ -31,7 +31,12 @@
       "mcp__laravel-boost__get-absolute-url",
       "mcp__laravel-boost__database-query",
       "Bash(php -i)",
-      "Bash(vendor/bin/pint:*)"
+      "Bash(vendor/bin/pint:*)",
+      "Bash(php:*)",
+      "Bash(apt-get update:*)",
+      "Bash(apt-cache search:*)",
+      "Bash(apt-get install:*)",
+      "Bash(PGPASSWORD=laravel psql:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

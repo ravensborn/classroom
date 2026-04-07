@@ -38,6 +38,7 @@ class Index extends Component
     public function render()
     {
         $teachers = User::teachers()
+            ->withCount('posts')
             ->when($this->search, fn ($q) => $q->where(function ($q) {
                 $q->where('name', 'ilike', "%{$this->search}%")
                   ->orWhere('username', 'ilike', "%{$this->search}%");

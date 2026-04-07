@@ -41,9 +41,9 @@ class User extends Authenticatable
         return $this->belongsToMany(Classroom::class);
     }
 
-    public function videos(): HasMany
+    public function posts(): HasMany
     {
-        return $this->hasMany(Video::class);
+        return $this->hasMany(Post::class);
     }
 
     public function scopeTeachers($query): void

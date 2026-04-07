@@ -19,7 +19,7 @@
                         </svg>
                     </div>
                     <h3 class="font-semibold text-zinc-900 mb-1">{{ $classroom->name }}</h3>
-                    <p class="text-sm text-zinc-400">{{ $classroom->videos_count }} {{ __('Videos') }}</p>
+                    <p class="text-sm text-zinc-400">{{ $classroom->posts_count }} {{ __('Posts') }}</p>
                 </a>
             @endforeach
         </div>

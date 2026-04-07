@@ -25,8 +25,8 @@ class Classroom extends Model
         return $this->belongsToMany(User::class)->where('role', 'student');
     }
 
-    public function videos(): HasMany
+    public function posts(): HasMany
     {
-        return $this->hasMany(Video::class)->latest();
+        return $this->hasMany(Post::class)->latest();
     }
 }

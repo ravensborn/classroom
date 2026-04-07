@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class VideoAttendance extends Model
+class PostAttendance extends Model
 {
-    protected $fillable = ['video_id', 'user_id'];
+    protected $fillable = ['post_id', 'user_id'];
 
-    public function video(): BelongsTo
+    public function post(): BelongsTo
     {
-        return $this->belongsTo(Video::class);
+        return $this->belongsTo(Post::class);
     }
 
     public function student(): BelongsTo
